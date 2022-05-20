@@ -1,0 +1,41 @@
+import math
+
+class VendingMachine:
+
+	def __init__(self, itemPrice, payWith):
+		self.denomination = {0.01:10, 0.10:20, 0.20:4, 0.50:10, 1:5, 5:2, 10:4, 50:0, 100:0}
+		self.balanceToPay = round(float(payWith),2) - round(float(itemPrice),2)
+		self.itemPrice = round(float(itemPrice),2)
+		self.payWith = round(float(payWith),2)
+		self.currentBalance = self.balanceToPay
+		self.messages = []
+        
+	def calculation(self):
+		for currentDenomination,currentDenominationAvailable in reversed(self.denomination.items()):
+			self.messages.append(self.message(currentDenomination,self.getConsumedNotes(currentDenomination,currentDenominationAvailable)))
+		self.printMessage()
+			        
+	def message(self, index, consumedMoneyCount):
+		return f"RM{'{:.2f}'.format(index)}%sx {consumedMoneyCount} ({'{:.2f}'.format(consumedMoneyCount*index)})"
+
+	def getConsumedNotes(self,currentDenomination,currentDenominationAvailable,consumedNote=0):
+		if self.currentBalance > 0 and currentDenominationAvailable > 0:
+			maxConsumedNotes = math.floor(self.currentBalance/currentDenomination)
+			consumedNote = maxConsumedNotes if currentDenominationAvailable > maxConsumedNotes else currentDenominationAvailable
+			self.currentBalance = round(self.currentBalance - (consumedNote*currentDenomination),2)
+		return consumedNote
+
+	def printMessage(self):
+		print("Balance to pay:",self.balanceToPay)
+		if self.currentBalance == 0:
+			for x in self.messages:
+				a = 11
+				if x.find('x') != a:
+					a = a-x.find('x')
+				print(x % (' '*a))
+		else:
+			print("not enough change")
+		return
+    
+p = VendingMachine(input("Enter Item Value:"),input("Enter Money:"))
+p.calculation()
